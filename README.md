@@ -68,13 +68,21 @@ Wscan首次运行时，将会生成一个名为config.yaml的文件。将plugins
 ./wscan  --log-level=debug ws --basic-crawler http://testphp.vulnweb.com/ --json-output=wscan_scan_result.json --html-output=wscan_scan_result.html
 ./wscan  --log-level=debug ws --browser  http://testphp.vulnweb.com/ --html-output=wscan_scan_result.html
 ./wscan  --log-level=debug ws --url http://testphp.vulnweb.com/listproducts.php?cat=1  --json-output=wscan_scan_result.json
-./wscan  --log-level=debug ws --url-file=/wscan/url_file.txt --html-output=wscan_scan_result.html
+./wscan  --log-level=debug ws --url-file=/wscan/url_file.txt --html-output=wscan_scan_result.html 
+
 ```
 ### Ⅱ.专项扫描
 在命令行中使用plug参数启用要扫描的插件
 ```
 ./wscan  --log-level=debug ws  --plug=sqldet --basic-crawler http://testphp.vulnweb.com/ --html-output=wscan_scan_result.html
 ```
+### Ⅲ.仅爬虫
+仅记录爬虫结果，不进行漏洞扫描
+```
+./wscan  --log-level=debug ws --browser http://testphp.vulnweb.com/ --no-scan --json-crawler-output=json_crawler_output.json
+./wscan  --log-level=debug ws --basic-crawler http://testphp.vulnweb.com/ --no-scan --json-crawler-output=json_crawler_output.json
+```
+
 ## 被动扫描
 ### Ⅰ.生成并安装CA
 运行genca命令之后，将在当前文件夹生成 ca.crt 和 ca.key 两个文件。
@@ -99,7 +107,7 @@ Wscan首次运行时，将会生成一个名为config.yaml的文件。将plugins
 ## POC扫描
 ### 下载插件包
 Wscan不内置任何POC插件，但Wscan的prometheus插件引擎已支持Nuclei、XRAY、Goby 标准POC插件，
-与其它扫描器不同的是Wscan可以自定义POC检测的深度，从而发现更多的Web安全问题。
+与其它扫描器不同的是Wscan可以自定义POC检测的深度，从而发现更多的Web安全问题。同时自动判断nuclei插件的扫描深度，将nuclei插件的扫描能力发挥到极致。
 
 我们把下载的 X-ray 和 Nuclei 插件包放入同一个目录，并在配置文件中指定插件包的路径。
 
@@ -173,7 +181,7 @@ custom:
 ```
 
 ##  Waf绕过/Waf测试
-不同于POC测试，自定义WEB通用漏洞扫描插件，会对指定位置的参数进行FUZZ,
+不同于POC测试，Waf绕过/Waf测试插件，更注重的Payload，检测WAF阻断页面,
 
 ### Step1 插件样例
 样例参考 https://github.com/chushuai/wscan/tree/main/core/plugins/waftest/tmpl/owasp
@@ -254,11 +262,11 @@ reverse:
 #### Ⅱ.客户端配置
 ```yaml
 reverse:
+    token: "xxxx"
     client:
         remote_server: true
         http_base_url: ""
         dns_server_ip: ""
-        rmi_server_addr: ""
 ```
 ## 扫描报告
 Wscan支持JSON、HTML等多种格式的扫描报告，其中包含详尽的漏洞验证逻辑。
@@ -289,6 +297,10 @@ Wscan支持JSON、HTML等多种格式的扫描报告，其中包含详尽的漏�
 * 2024.03.25 发布v1.0.19 二进制版，新增xstream系列漏洞检测插件
 * 2024.03.27 发布v1.0.20 二进制版，主被动扫描支持hostname、path作为过滤条件
 * 2024.04.06 发布v1.0.21 二进制版，主被动扫描支持WEB组件识别，内置3700+WEB组件识别插件
+* 2024.07.06 发布v1.0.22 二进制版，实现利用语义分析的方式检测XSS漏洞，XSS检测准确率大幅提升
+* 2024.07.07 发布v1.0.23 二进制版，支持通用log4j-rce漏洞检测
+* 2024.07.20 发布v1.0.24 二进制版，支持对 JSON 格式的参数进行模糊测试，使用 --json-crawler-output 输出动静态爬虫的扫描结果，并大幅提升动态爬虫的爬取能力
+* 2024.07.21 发布v1.0.25 二进制版，自动判断Nuclei插件是否支持多级目录扫描; 支持cookie注入
 
 # 开源时间表
 Wscan的目标是创建一个开源且非盈利的项目。然而，由于Wscan的工作量庞大，代码仍在快速迭代中。
